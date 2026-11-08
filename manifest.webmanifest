@@ -1,0 +1,15 @@
+{
+  "name": "مِدار — مشغل IPTV",
+  "short_name": "مِدار",
+  "description": "مشغّل أنيق لقوائم IPTV الخاصة بك",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#090d17",
+  "theme_color": "#090d17",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
