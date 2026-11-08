@@ -1,0 +1,11 @@
+{
+  "name": "IPTV WORLD",
+  "short_name": "IPTV WORLD",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#101827",
+  "description": "مشغل قوائم M3U للمصادر المصرح بها",
+  "icons": []
+}

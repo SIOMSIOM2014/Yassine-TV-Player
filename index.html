@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="IPTV WORLD - مشغل قوائم القنوات التلفزيونية التي تملك حق استخدامها">
+  <title>IPTV WORLD</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <style>
+    :root{color-scheme:dark;--bg:#0b1220;--panel:#121d2e;--panel2:#1a2940;--line:#293951;--text:#f4f7fb;--muted:#aab8ca;--accent:#e53935;--accent2:#ff665e}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Tahoma,sans-serif}
+    header{position:sticky;top:0;z-index:5;background:#101827ed;border-bottom:1px solid var(--line);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;backdrop-filter:blur(12px)}
+    .brand{font-size:22px;font-weight:800;letter-spacing:.4px}.brand span{color:var(--accent2)}
+    button,input,select{font:inherit}button{border:0;border-radius:11px;padding:10px 14px;background:var(--accent);color:white;font-weight:700;cursor:pointer}button.secondary{background:var(--panel2);border:1px solid var(--line)}button:disabled{opacity:.5;cursor:not-allowed}
+    main{max-width:1150px;margin:auto;padding:18px}.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin:12px 0 18px}
+    input,select{width:100%;min-width:0;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:11px;padding:12px}
+    .notice{background:#18283b;border:1px solid #314762;border-radius:13px;padding:12px 14px;color:var(--muted);line-height:1.6;margin:12px 0}
+    .section-title{font-size:20px;margin:18px 0 12px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+    .country,.channel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;cursor:pointer;transition:.15s}
+    .country:hover,.channel:hover{border-color:var(--accent2);transform:translateY(-2px)}
+    .country{min-height:105px;display:flex;align-items:center;justify-content:space-between;gap:8px}.country strong{font-size:16px}.count{color:var(--muted);font-size:13px}
+    .channel{display:flex;align-items:center;gap:12px;margin:8px 0}.logo{width:48px;height:48px;flex:0 0 48px;border-radius:10px;background:#26364d;object-fit:contain}.channel-info{min-width:0;flex:1}.channel-name{font-weight:700;overflow-wrap:anywhere}.channel-meta{font-size:12px;color:var(--muted);margin-top:5px}
+    .star{background:transparent;color:#ffd166;padding:5px;font-size:21px}.player{background:#000;border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:14px 0}.player video{display:block;width:100%;max-height:62vh;aspect-ratio:16/9;background:#000}.player-status{padding:10px 13px;color:var(--muted);font-size:14px}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.hidden{display:none!important}.empty{text-align:center;padding:35px 12px;color:var(--muted)}
+    .small{font-size:12px;color:var(--muted);line-height:1.6}.footer{border-top:1px solid var(--line);padding:18px;color:var(--muted);font-size:12px;text-align:center;margin-top:30px}
+    @media(max-width:650px){main{padding:12px}.toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}.brand{font-size:19px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.country{min-height:90px;padding:11px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">📺 <span>IPTV</span> WORLD</div>
+  <div class="row">
+    <button class="secondary" id="homeBtn">الرئيسية</button>
+    <button class="secondary" id="langBtn">FR</button>
+  </div>
+</header>
+<main>
+  <div class="notice" id="legalNotice">استخدم فقط قوائم وروابط البث التي تملك حق مشاهدتها أو توزيعها. لا يتضمن هذا التطبيق قنوات مدفوعة أو روابط YallaShoot.</div>
+  <div class="row">
+    <div>
+      <div class="section-title" id="pageTitle">الدول والقنوات</div>
+      <div class="small" id="summary">حمّل قائمة M3U قانونية للبدء.</div>
+    </div>
+    <button id="addPlaylistBtn">＋ إضافة قائمة M3U</button>
+  </div>
+  <div class="toolbar">
+    <input id="search" type="search" placeholder="ابحث عن دولة أو قناة..." aria-label="بحث">
+    <select id="filter"><option value="all">كل القنوات</option><option value="favorites">المفضلة</option></select>
+    <button class="secondary" id="reloadBtn">إعادة التحميل</button>
+  </div>
+  <section id="countriesView">
+    <div class="grid" id="countriesGrid"></div>
+    <div class="empty hidden" id="countryEmpty">لا توجد دول أو قنوات. أضف قائمة M3U.</div>
+  </section>
+  <section id="channelsView" class="hidden">
+    <div class="row"><button class="secondary" id="backBtn">← رجوع للدول</button><span class="small" id="channelCount"></span></div>
+    <div class="player">
+      <video id="video" controls playsinline preload="none"></video>
+      <div class="player-status" id="playerStatus">اختر قناة لبدء التشغيل.</div>
+    </div>
+    <div id="channelsList"></div>
+    <div class="empty hidden" id="channelEmpty">لا توجد نتائج مطابقة.</div>
+  </section>
+  <div class="footer">IPTV WORLD · مشغل قوائم M3U للمصادر المصرّح بها</div>
+</main>
+<input id="fileInput" type="file" accept=".m3u,.m3u8,text/plain" class="hidden">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<script>
+(() => {
+  "use strict";
+  const DEFAULT_PLAYLIST = "https://iptv-org.github.io/iptv/index.country.m3u";
+  const $ = id => document.getElementById(id);
+  const state = { channels: [], country: null, favorites: new Set(), hls: null, lang: "ar", playlistUrl: DEFAULT_PLAYLIST };
+  const video = $("video");
+
+  function countryName(ch) {
+    return ch.country || ch.group || "غير محدد";
+  }
+  function parseM3U(text) {
+    const result = [];
+    let meta = {};
+    for (const raw of text.replace(/\r/g, "").split("\n")) {
+      const line = raw.trim();
+      if (!line) continue;
+      if (line.startsWith("#EXTINF")) {
+        const attrs = {};
+        for (const m of line.matchAll(/([\w-]+)="([^"]*)"/g)) attrs[m[1].toLowerCase()] = m[2];
+        const comma = line.lastIndexOf(",");
+        meta = {
+          name: comma >= 0 ? line.slice(comma + 1).trim() : (attrs["tvg-name"] || "قناة بدون اسم"),
+          logo: attrs["tvg-logo"] || "",
+          country: attrs["tvg-country"] || "",
+          group: attrs["group-title"] || "",
+          id: attrs["tvg-id"] || ""
+        };
+      } else if (/^https?:\/\//i.test(line) && meta.name) {
+        result.push({...meta, url: line});
+        meta = {};
+      }
+    }
+    return result;
+  }
+  function safeId(ch) { return ch.url + "|" + ch.name; }
+  function setStatus(message) { $("playerStatus").textContent = message; }
+  function stopPlayback() {
+    if (state.hls) { state.hls.destroy(); state.hls = null; }
+    video.pause(); video.removeAttribute("src"); video.load();
+  }
+  function playChannel(ch) {
+    stopPlayback();
+    setStatus("جارٍ محاولة تشغيل: " + ch.name);
+    const url = ch.url;
+    if (window.Hls && Hls.isSupported() && /\.m3u8($|\?)/i.test(url)) {
+      state.hls = new Hls({enableWorker:true});
+      state.hls.loadSource(url);
+      state.hls.attachMedia(video);
+      state.hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => setStatus("اضغط تشغيل لبدء القناة.")));
+      state.hls.on(Hls.Events.ERROR, (_, data) => {
+        if (data.fatal) setStatus("تعذر تشغيل القناة. قد يكون الرابط متوقفاً أو يمنع البث التشغيل من هذا الموقع.");
+      });
+    } else {
+      video.src = url;
+      video.play().catch(() => setStatus("لم يبدأ التشغيل تلقائياً. اضغط زر التشغيل أو جرّب قناة أخرى."));
+    }
+    video.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+  function renderCountries() {
+    $("countriesGrid").innerHTML = "";
+    const q = $("search").value.trim().toLowerCase();
+    const groups = new Map();
+    state.channels.forEach(ch => {
+      const c = countryName(ch);
+      if (!groups.has(c)) groups.set(c, []);
+      groups.get(c).push(ch);
+    });
+    let shown = 0;
+    [...groups.entries()].sort((a,b)=>a[0].localeCompare(b[0])).forEach(([country, list]) => {
+      if (q && !country.toLowerCase().includes(q) && !list.some(c=>c.name.toLowerCase().includes(q))) return;
+      const card = document.createElement("button");
+      card.className = "country secondary";
+      const label = document.createElement("strong"); label.textContent = "🌍 " + country;
+      const count = document.createElement("span"); count.className = "count"; count.textContent = list.length + " قناة";
+      card.append(label,count); card.addEventListener("click",()=>openCountry(country));
+      $("countriesGrid").append(card); shown++;
+    });
+    $("countryEmpty").classList.toggle("hidden", shown !== 0);
+    $("summary").textContent = state.channels.length + " قناة محمّلة";
+  }
+  function openCountry(country) {
+    state.country = country;
+    $("countriesView").classList.add("hidden"); $("channelsView").classList.remove("hidden");
+    $("pageTitle").textContent = country;
+    renderChannels();
+  }
+  function renderChannels() {
+    const q = $("search").value.trim().toLowerCase();
+    const favOnly = $("filter").value === "favorites";
+    const list = state.channels.filter(ch => countryName(ch) === state.country &&
+      (!q || ch.name.toLowerCase().includes(q)) &&
+      (!favOnly || state.favorites.has(safeId(ch))));
+    $("channelsList").innerHTML = "";
+    $("channelCount").textContent = list.length + " قناة";
+    $("channelEmpty").classList.toggle("hidden", list.length !== 0);
+    list.forEach(ch => {
+      const item = document.createElement("div"); item.className = "channel";
+      const img = document.createElement("img"); img.className="logo"; img.alt=""; img.loading="lazy";
+      if (ch.logo && /^https?:\/\//i.test(ch.logo)) img.src=ch.logo;
+      img.onerror=()=>{img.removeAttribute("src");};
+      const info=document.createElement("div"); info.className="channel-info";
+      const name=document.createElement("div"); name.className="channel-name"; name.textContent=ch.name;
+      const meta=document.createElement("div"); meta.className="channel-meta"; meta.textContent=ch.group || ch.country || "IPTV";
+      info.append(name,meta);
+      const star=document.createElement("button"); star.className="star"; star.title="إضافة للمفضلة";
+      star.textContent=state.favorites.has(safeId(ch))?"★":"☆";
+      star.addEventListener("click",e=>{e.stopPropagation(); const id=safeId(ch); state.favorites.has(id)?state.favorites.delete(id):state.favorites.add(id); renderChannels();});
+      item.append(img,info,star); item.addEventListener("click",()=>playChannel(ch));
+      $("channelsList").append(item);
+    });
+  }
+  function showHome() {
+    stopPlayback(); state.country=null;
+    $("channelsView").classList.add("hidden"); $("countriesView").classList.remove("hidden");
+    $("pageTitle").textContent="الدول والقنوات"; renderCountries();
+  }
+  async function loadUrl(url) {
+    setStatus("جارٍ تحميل قائمة القنوات...");
+    try {
+      const response=await fetch(url);
+      if(!response.ok) throw new Error("HTTP "+response.status);
+      const text=await response.text();
+      const parsed=parseM3U(text);
+      if(!parsed.length) throw new Error("لم يتم العثور على قنوات M3U");
+      state.channels=parsed; state.playlistUrl=url; showHome();
+      $("legalNotice").textContent="تم تحميل القائمة. تأكد من أن لديك حق استخدام روابط البث المدرجة فيها.";
+    } catch(err) {
+      $("summary").textContent="تعذر تحميل القائمة من الرابط: "+err.message;
+      $("countryEmpty").classList.remove("hidden");
+    }
+  }
+  $("addPlaylistBtn").addEventListener("click",()=> {
+    const choice=prompt("أدخل رابط قائمة M3U تملك حق استخدامها. اتركه فارغاً لاختيار ملف من الهاتف:");
+    if(choice && /^https?:\/\//i.test(choice)) loadUrl(choice);
+    else if(!choice) $("fileInput").click();
+    else alert("يرجى إدخال رابط HTTP أو HTTPS صالح.");
+  });
+  $("fileInput").addEventListener("change", async e=>{
+    const file=e.target.files[0]; if(!file)return;
+    const parsed=parseM3U(await file.text());
+    if(!parsed.length){alert("لم يتم العثور على قنوات في الملف.");return;}
+    state.channels=parsed; showHome();
+  });
+  $("backBtn").addEventListener("click",showHome);
+  $("homeBtn").addEventListener("click",showHome);
+  $("reloadBtn").addEventListener("click",()=>loadUrl(state.playlistUrl));
+  $("search").addEventListener("input",()=>state.country?renderChannels():renderCountries());
+  $("filter").addEventListener("change",()=>state.country?renderChannels():renderCountries());
+  $("langBtn").addEventListener("click",()=>{state.lang=state.lang==="ar"?"fr":"ar";document.documentElement.lang=state.lang;document.documentElement.dir=state.lang==="ar"?"rtl":"ltr";$("langBtn").textContent=state.lang==="ar"?"FR":"AR";});
+  video.addEventListener("error",()=>setStatus("تعذر تشغيل هذا البث. قد يكون الرابط غير متاح أو يتطلب صيغة/صلاحيات مختلفة."));
+  renderCountries();
+  loadUrl(DEFAULT_PLAYLIST);
+  if("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+  }
+})();
+</script>
+</body>
+</html>
