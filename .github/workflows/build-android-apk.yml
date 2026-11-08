@@ -1,0 +1,43 @@
+name: Build IPTV WORLD Android APK
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-android-apk.yml'
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Download app icon
+        run: |
+          mkdir -p android/app/src/main/res/mipmap-mdpi android/app/src/main/res/mipmap-hdpi android/app/src/main/res/mipmap-xhdpi android/app/src/main/res/mipmap-xxhdpi android/app/src/main/res/mipmap-xxxhdpi
+          curl -fL 'https://raw.githubusercontent.com/SIOMSIOM2014/IPTV-/main/icon-512.png' -o /tmp/icon.png
+          python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          from PIL import Image
+          src=Image.open('/tmp/icon.png').convert('RGBA')
+          sizes={'mdpi':48,'hdpi':72,'xhdpi':96,'xxhdpi':144,'xxxhdpi':192}
+          for density,size in sizes.items():
+              src.resize((size,size),Image.Resampling.LANCZOS).save(f'android/app/src/main/res/mipmap-{density}/ic_launcher.png')
+          PY
+      - name: Build release APK
+        run: |
+          cd android
+          gradle --no-daemon assembleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IPTV-WORLD-Android-APK
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,15 @@
+IPTV WORLD – أيقونة التطبيق
+
+ضع الملفات التالية في جذر موقع GitHub Pages بجانب index.html:
+- icon-192.png
+- icon-512.png
+- icon-512-maskable.png
+- apple-touch-icon.png
+
+استبدل manifest.webmanifest بالملف الموجود في هذه الحزمة.
+وفي قسم <head> من index.html أضف:
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+
+بعد نشر الملفات، افتح الموقع في Chrome ثم اختر تثبيت التطبيق / Add to Home screen.
+قد تحتاج إلى إزالة النسخة المثبتة القديمة ثم تثبيتها من جديد لتحديث الأيقونة.

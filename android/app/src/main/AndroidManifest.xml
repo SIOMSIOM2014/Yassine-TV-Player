@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <application android:allowBackup="false" android:usesCleartextTraffic="false"
+        android:label="IPTV WORLD" android:theme="@android:style/Theme.Material.NoActionBar"
+        android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher">
+        <activity android:name=".MainActivity" android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="true" android:screenOrientation="sensor">
+            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LEANBACK_LAUNCHER"/></intent-filter>
+        </activity>
+    </application>
+</manifest>
